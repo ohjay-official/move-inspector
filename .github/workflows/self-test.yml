@@ -1,0 +1,19 @@
+name: Self-test — scan the Sui framework package
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan 0x2 (Sui framework) on mainnet
+        uses: ./
+        with:
+          package-id: '0x2'
+          network: 'mainnet'
+          fail-on-warn: 'false'
