@@ -1,0 +1,14 @@
+{
+  "name": "move-inspector",
+  "version": "1.0.0",
+  "description": "Heuristic access-control scanner for Sui Move packages — web app + CLI + GitHub Action, zero dependencies.",
+  "bin": {
+    "move-inspector": "./cli.js"
+  },
+  "main": "cli.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "keywords": ["sui", "move", "hackathon", "sui-overflow", "devtools", "security"]
+}

@@ -1,0 +1,46 @@
+name: 'Move Inspector'
+description: 'Heuristic access-control scan for a Sui Move package — fails the job if a privileged-looking public function has no capability check.'
+author: 'Move Inspector'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  package-id:
+    description: 'Sui package ID to scan (0x...)'
+    required: true
+  network:
+    description: 'mainnet | testnet | devnet'
+    required: false
+    default: 'mainnet'
+  fail-on-warn:
+    description: 'Fail the job if WARN-level flags are found'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Run Move Inspector scan
+      shell: bash
+      run: |
+        FAIL_FLAG=""
+        if [ "${{ inputs.fail-on-warn }}" = "false" ]; then
+          FAIL_FLAG="--no-fail"
+        fi
+        node "${{ github.action_path }}/cli.js" "${{ inputs.package-id }}" --network "${{ inputs.network }}" $FAIL_FLAG | tee scan-output.txt
+      working-directory: ${{ github.action_path }}
+
+    - name: Write job summary
+      if: always()
+      shell: bash
+      run: |
+        echo "### Move Inspector scan — \`${{ inputs.package-id }}\` (${{ inputs.network }})" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat "${{ github.action_path }}/scan-output.txt" >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
+        echo '```' >> $GITHUB_STEP_SUMMARY
