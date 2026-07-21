@@ -67,7 +67,7 @@ function typeToString(t){
 function paramList(params){ return (params || []).map(typeToString); }
 
 function looksPrivileged(name){
-  return /^(mint|burn|withdraw|admin_|set_|update_|remove_|add_|freeze_|upgrade_|pause_|unpause_|transfer_ownership|init_admin)/i.test(name);
+  return /^(mint_|burn_|admin_|upgrade_|freeze_|pause_|unpause_|init_admin|transfer_ownership)/i.test(name);
 }
 function hasCapParam(params){ return params.some(p => /Cap|Admin|Owner|Witness/i.test(p)); }
 

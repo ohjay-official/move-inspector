@@ -66,7 +66,7 @@ This repo includes a working example at [`.github/workflows/self-test.yml`](.git
 
 Pattern-based, not a substitute for an audit:
 
-- **Privileged-looking public functions with no capability param** — a `public` function named like `mint_`, `admin_`, `set_`, `withdraw_`, etc. that takes no `Cap`/`Admin`/`Owner`/`Witness`-typed parameter gets flagged. It might be intentionally open, but it's worth a human look.
+- **Privileged-looking public functions with no capability param** — a `public` function named like `mint_`, `admin_`, `upgrade_`, `freeze_`, `pause_`/`unpause_`, `init_admin`, or `transfer_ownership` that takes no `Cap`/`Admin`/`Owner`/`Witness`-typed parameter gets flagged. The verb list is intentionally narrow and high-signal — generic Move primitives like `add_`/`remove_`/`set_`/`update_` (used constantly by ordinary data-structure code, e.g. `dynamic_field::add`) were deliberately left out after testing against Sui's own framework package (`0x2`) surfaced them as noise, not real signal. It might still be intentionally open, but it's worth a human look.
 - **`key`-only structs** (no `store`) — flagged as informational; can't be wrapped in other objects or moved with generic transfer functions.
 - **All-public-no-entry packages** — informational note that functions are only reachable from Move/PTBs, not directly from a wallet.
 
