@@ -838,6 +838,14 @@ function setStatus(msg, isError){
   statusEl.className = isError ? 'error' : '';
 }
 
+// Sui's own base framework packages — the trust root of the ecosystem, already
+// audited by Mysten Labs. The heuristic scan is designed to catch suspicious
+// patterns in third-party contracts, not to second-guess the base layer itself.
+const SYSTEM_PACKAGES = { mainnet: ['0x1','0x2','0x3'], testnet: ['0x1','0x2','0x3'], devnet: ['0x1','0x2','0x3'] };
+function isSystemPackage(pkg, network){
+  return (SYSTEM_PACKAGES[network] || []).includes(pkg.trim().toLowerCase());
+}
+
 let lastScan = null; // holds the most recent successful scan, used by exportReport()
 
 function updatePermalink(pkg, network){
@@ -1009,7 +1017,7 @@ function buildChecklist(modules){
 
 function renderPackage(pkg, network, modules){
   $('#checklistSection').style.display = '';
-  $('#modulesTitle').innerHTML = 'Modules <span class="mode-tag">package</span>';
+  $('#modulesTitle').innerHTML = 'Modules <span class="mode-tag">package</span>' + (isSystemPackage(pkg, network) ? ' <span class="mode-tag" style="background:rgba(90,220,150,0.15);color:var(--green);">verified framework</span>' : '');
 
   const moduleNames = Object.keys(modules);
   const totalFns = moduleNames.reduce((a,m)=>a+Object.keys(modules[m].exposedFunctions||{}).length,0);
@@ -1024,9 +1032,12 @@ function renderPackage(pkg, network, modules){
 
   animateCounts();
 
-  const flags = buildChecklist(modules);
+  const isSystem = isSystemPackage(pkg, network);
+  const flags = isSystem ? [] : buildChecklist(modules);
   const checklistEl = $('#checklist');
-  if(flags.length === 0){
+  if(isSystem){
+    checklistEl.innerHTML = '<div class="flag-empty">'+checkIcon+' <code>'+pkg+'</code> is a verified Sui system package — part of the network\'s base framework, already audited and maintained by Mysten Labs. Heuristic scanning targets third-party contracts, not the trust root itself, so it\'s skipped here.</div>';
+  } else if(flags.length === 0){
     checklistEl.innerHTML = '<div class="flag-empty">'+checkIcon+' No heuristic flags raised on this pass.</div>';
   } else {
     checklistEl.innerHTML = flags.map((f,i) =>

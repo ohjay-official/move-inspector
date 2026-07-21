@@ -71,6 +71,11 @@ function looksPrivileged(name){
 }
 function hasCapParam(params){ return params.some(p => /Cap|Admin|Owner|Witness|Publisher|Ticket|Receipt|Proof|Permit/i.test(p)); }
 
+const SYSTEM_PACKAGES = { mainnet: ['0x1','0x2','0x3'], testnet: ['0x1','0x2','0x3'], devnet: ['0x1','0x2','0x3'] };
+function isSystemPackage(pkg, network){
+  return (SYSTEM_PACKAGES[network] || []).includes(pkg.trim().toLowerCase());
+}
+
 function buildChecklist(modules){
   const flags = [];
   let totalPublic = 0, totalEntry = 0, totalStructsNoStore = 0;
@@ -155,16 +160,28 @@ async function main(){
       console.error('No modules found for that package ID on ' + args.network + '.');
       process.exit(2);
     }
-    const flags = buildChecklist(modules);
+    const flags = isSystemPackage(args.pkg, args.network) ? [] : buildChecklist(modules);
+    const isSystem = isSystemPackage(args.pkg, args.network);
     const warnCount = flags.filter(f => f.level === 'warn').length;
 
     if(args.json){
       console.log(JSON.stringify({
         package: args.pkg, network: args.network,
         moduleCount: moduleNames.length, flags,
+        systemPackage: isSystem,
       }, null, 2));
     } else {
-      printReport(args.pkg, args.network, modules, flags);
+      if(isSystem){
+        console.log('');
+        console.log(c('bold', 'Move Inspector') + c('dim', '  —  ' + args.network));
+        console.log(c('dim', args.pkg));
+        console.log(c('dim', '─'.repeat(60)));
+        console.log(c('green', 'Verified Sui system package — base framework, already audited by Mysten Labs.'));
+        console.log(c('dim', 'Heuristic scanning targets third-party contracts, so it\'s skipped here.'));
+        console.log('');
+      } else {
+        printReport(args.pkg, args.network, modules, flags);
+      }
     }
 
     if(args.failOnWarn && warnCount > 0) process.exit(1);
