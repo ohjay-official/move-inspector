@@ -86,7 +86,7 @@ function buildChecklist(modules){
       const isPublic = fn.visibility === 'Public';
       if(isPublic) totalPublic++;
       if(fn.isEntry) totalEntry++;
-      if(isPublic && looksPrivileged(fnName) && !hasCapParam(params)){
+      if(isPublic && looksPrivileged(fnName) && !hasCapParam(params) && !/cap/i.test(fnName)){
         flags.push({
           level: 'warn',
           module: modName,

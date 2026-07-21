@@ -982,7 +982,7 @@ function buildChecklist(modules){
       if(isPublic) totalPublic++;
       if(fn.isEntry) totalEntry++;
 
-      if(isPublic && looksPrivileged(fnName) && !hasCapParam(params)){
+      if(isPublic && looksPrivileged(fnName) && !hasCapParam(params) && !/cap/i.test(fnName)){
         flags.push({
           level:'warn',
           text: '<code>'+modName+'::'+fnName+'</code> looks privileged by name but takes no capability/admin/witness-typed parameter. Verify it actually restricts who can call it.'
