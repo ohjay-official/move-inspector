@@ -956,7 +956,7 @@ function looksPrivileged(name){
   return /^(mint_|burn_|admin_|upgrade_|freeze_|pause_|unpause_|init_admin|transfer_ownership)/i.test(name);
 }
 function hasCapParam(params){
-  return params.some(p => /Cap|Admin|Owner|Witness/i.test(p));
+  return params.some(p => /Cap|Admin|Owner|Witness|Publisher|Ticket|Receipt|Proof|Permit/i.test(p));
 }
 
 const warnIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L14.7 3.86a2 2 0 0 0-3.4 0z"/></svg>';
@@ -1031,7 +1031,7 @@ function renderPackage(pkg, network, modules){
   } else {
     checklistEl.innerHTML = flags.map((f,i) =>
       '<div class="flag '+(f.level==='info'?'info':'')+'" style="animation-delay:'+(i*60)+'ms"><span class="icon">'+(f.level==='info'?infoIcon:warnIcon)+'</span><div>'+f.text+'</div></div>'
-    ).join('') + '<div class="heuristic-note">Pattern-based heuristics only — not a security audit. Always verify against the source.</div>';
+    ).join('') + '<div class="heuristic-note">Pattern-based heuristics only — not a security audit. Always verify against the source. Note: some Sui framework functions (e.g. <code>transfer::freeze_object</code>) are gated by Move\'s bytecode verifier itself — the generic type must be defined in the caller\'s own module — which isn\'t visible from the function signature alone, so this class of protection can still show up as a false flag.</div>';
   }
 
   const modulesEl = $('#modules');

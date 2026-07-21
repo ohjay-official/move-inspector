@@ -69,7 +69,7 @@ function paramList(params){ return (params || []).map(typeToString); }
 function looksPrivileged(name){
   return /^(mint_|burn_|admin_|upgrade_|freeze_|pause_|unpause_|init_admin|transfer_ownership)/i.test(name);
 }
-function hasCapParam(params){ return params.some(p => /Cap|Admin|Owner|Witness/i.test(p)); }
+function hasCapParam(params){ return params.some(p => /Cap|Admin|Owner|Witness|Publisher|Ticket|Receipt|Proof|Permit/i.test(p)); }
 
 function buildChecklist(modules){
   const flags = [];
